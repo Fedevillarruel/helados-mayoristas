@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bears Helados — Catálogo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.min.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+
+    <!-- ════════════ LOGIN ════════════ -->
+    <section id="loginView">
+      <div class="login-split">
+
+        <!-- Izquierda: imagen editorial -->
+        <div class="login-visual" aria-hidden="true">
+          <div class="login-visual-bg"></div>
+          <div class="login-visual-content">
+            <p class="login-visual-label">Catálogo premium</p>
+            <h1 class="login-visual-brand">Bears<br>Helados</h1>
+            <p class="login-visual-year">Desde 2018 — Argentina</p>
+          </div>
+        </div>
+
+        <!-- Derecha: formulario limpio -->
+        <div class="login-form-side">
+          <div class="login-form-inner">
+            <div class="login-header">
+              <span class="login-logo-mark">B</span>
+              <div>
+                <h2 class="login-heading">Bienvenido</h2>
+                <p class="login-sub">Ingresá con tu cuenta para continuar</p>
+              </div>
+            </div>
+
+            <form id="loginForm" class="login-form">
+              <div class="lf-field">
+                <label for="username">Usuario</label>
+                <input id="username" type="text" placeholder="Ingresá tu usuario" autocomplete="username" required />
+              </div>
+              <div class="lf-field">
+                <label for="password">Contraseña</label>
+                <input id="password" type="password" placeholder="Ingresá tu contraseña" autocomplete="current-password" required />
+              </div>
+              <p id="loginError" class="login-error"></p>
+              <button type="submit" class="btn-signin">Ingresar al catálogo</button>
+            </form>
+
+            <div class="login-qa">
+              <p class="login-qa-title">Acceso rápido</p>
+              <div class="login-qa-grid">
+                <button class="qa-btn qa-admin" data-user="admin" data-pass="admin123">
+                  <span class="qa-role">Admin</span>
+                  <span class="qa-cred">admin / admin123</span>
+                </button>
+                <button class="qa-btn qa-client" data-user="cliente" data-pass="cliente123">
+                  <span class="qa-role">Cliente</span>
+                  <span class="qa-cred">cliente / cliente123</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════ APP ════════════ -->
+    <section id="appView" class="hidden">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-brand">
+          <span class="topbar-mark">B</span>
+          <div>
+            <h2 id="storeTitle" class="topbar-title">Catálogo Bears</h2>
+            <p id="storeSubtitle" class="topbar-sub"></p>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div id="whoami" class="user-chip"></div>
+
+          <!-- Botón carrito (solo cliente) -->
+          <button id="cartToggleBtn" class="btn-cart-toggle hidden" aria-label="Abrir carrito">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
+            </svg>
+            <span id="cartBadge" class="cart-badge-dot hidden">0</span>
+          </button>
+
+          <button id="logoutBtn" class="btn-topbar">Salir</button>
+        </div>
+      </header>
+
+      <!-- ─── PANEL CLIENTE ─── -->
+      <section id="clientPanel" class="client-main hidden">
+
+        <!-- Flipbook (ocupa todo el ancho) -->
+        <div class="flipbook-wrapper">
+          <div class="flipbook-nav">
+            <button id="prevPageBtn" class="btn-nav" aria-label="Anterior">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <span id="bookProgress" class="progress-label"></span>
+            <button id="nextPageBtn" class="btn-nav" aria-label="Siguiente">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+          <div id="flipbook"></div>
+          <div class="progress-bar-wrap">
+            <div id="magProgressFill" class="progress-bar-fill"></div>
+          </div>
+        </div>
+
+        <!-- Carrito sidebar derecho -->
+        <aside id="cartDrawer" class="cart-drawer" aria-label="Carrito">
+          <div class="cart-drawer-inner">
+            <div class="cart-header">
+              <span class="cart-title">Tu pedido</span>
+              <button id="cartCloseBtn" class="cart-close" aria-label="Cerrar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+            <ul id="cartList" class="cart-list"></ul>
+            <div id="cartEmpty" class="cart-empty">
+              <div class="cart-empty-icon">
+                <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zm0 0h12M16 10a4 4 0 01-8 0"/></svg>
+              </div>
+              <span>Aún no elegiste sabores.</span>
+              <small>Pasá las páginas del catálogo.</small>
+            </div>
+            <div class="cart-footer">
+              <div class="cart-total-row">
+                <span class="cart-total-label">Total sabores</span>
+                <span id="cartTotalVal" class="cart-total-val">0</span>
+              </div>
+              <button id="clearCartBtn" class="btn-clear">Vaciar carrito</button>
+              <button id="orderWhatsappBtn" class="btn-whatsapp">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.998 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2.049 22l4.988-1.309A9.958 9.958 0 0011.998 22c5.522 0 10-4.478 10-10S17.52 2 11.998 2zm.002 18.18a8.166 8.166 0 01-4.163-1.14l-.298-.178-3.084.808.822-2.999-.195-.308A8.147 8.147 0 013.82 12c0-4.511 3.669-8.18 8.18-8.18 4.512 0 8.18 3.669 8.18 8.18 0 4.512-3.668 8.18-8.18 8.18z"/></svg>
+                Ordenar por WhatsApp
+              </button>
+            </div>
+          </div>
+        </aside>
+        <!-- Overlay para cerrar el drawer -->
+        <div id="cartOverlay" class="cart-overlay"></div>
+      </section>
+
+      <!-- ─── PANEL ADMIN ─── -->
+      <section id="adminPanel" class="admin-layout hidden">
+        <div class="admin-stats" id="adminStatsBar"></div>
+
+        <nav class="admin-tabs">
+          <button class="admin-tab active" data-tab="settings">Configuración</button>
+          <button class="admin-tab" data-tab="flavors">Sabores</button>
+          <button class="admin-tab" data-tab="reports">Reportes</button>
+        </nav>
+
+        <!-- Tab: Configuración -->
+        <div class="admin-tab-content active" id="tab-settings">
+          <div class="admin-cards-row">
+            <div class="admin-card">
+              <div class="admin-card-header"><h3>Títulos del catálogo</h3></div>
+              <form id="settingsForm" class="admin-form">
+                <label>Título principal<input id="settingsTitle" type="text" required /></label>
+                <label>Subtítulo<input id="settingsSubtitle" type="text" required /></label>
+                <button class="btn-save" type="submit">Guardar títulos</button>
+              </form>
+            </div>
+
+            <div class="admin-card">
+              <div class="admin-card-header"><h3>Agregar nuevo sabor</h3></div>
+              <form id="newFlavorForm" class="admin-form">
+                <label>Nombre del sabor<input id="newFlavorName" type="text" placeholder="Ej: Dulce de leche granizado" required /></label>
+                <label>Descripción<textarea id="newFlavorDescription" placeholder="Describí el sabor…" required></textarea></label>
+                <label>Foto
+                  <div class="img-input-group">
+                    <input id="newFlavorImage" type="url" placeholder="URL de imagen (https://…)" />
+                    <span class="img-input-or">o</span>
+                    <label class="btn-upload-file" for="newFlavorFile">Subir archivo
+                      <input id="newFlavorFile" type="file" accept="image/*" style="display:none" />
+                    </label>
+                  </div>
+                  <div id="newFlavorPreview" class="img-preview hidden"></div>
+                </label>
+                <button class="btn-save" type="submit">Agregar sabor</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Sabores -->
+        <div class="admin-tab-content" id="tab-flavors">
+          <div class="admin-flavors-header">
+            <p id="flavorsCount" class="flavors-count"></p>
+            <input id="flavorsSearch" type="search" placeholder="Buscar sabor…" class="flavors-search" />
+          </div>
+          <div id="flavorAdminList" class="admin-flavor-grid"></div>
+        </div>
+
+        <!-- Tab: Reportes -->
+        <div class="admin-tab-content" id="tab-reports">
+          <div id="reports" class="reports-grid"></div>
+        </div>
+      </section>
+    </section>
+
+    <script src="app.js"></script>
+  </body>
+</html>
