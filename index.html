@@ -12,6 +12,22 @@
   </head>
   <body>
 
+    <!-- ════════════ POPUP DEMO ════════════ -->
+    <div id="demoModal" class="demo-modal hidden" role="dialog" aria-modal="true">
+      <div class="demo-modal-box">
+        <span class="demo-modal-badge">Demo</span>
+        <h2 class="demo-modal-title">Bears Helados<br><span>Catálogo digital</span></h2>
+        <p class="demo-modal-body">
+          Esta es una <strong>demo funcional</strong>. Los datos se guardan en tu dispositivo y no se procesan pagos.
+        </p>
+        <div class="demo-modal-tip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          Para la mejor experiencia, usá una computadora de escritorio.
+        </div>
+        <button id="demoModalClose" class="demo-modal-btn">Entendido, continuar</button>
+      </div>
+    </div>
+
     <!-- ════════════ LOGIN ════════════ -->
     <section id="loginView">
       <div class="login-split">
@@ -30,7 +46,12 @@
         <div class="login-form-side">
           <div class="login-form-inner">
             <div class="login-header">
-              <span class="login-logo-mark">B</span>
+              <div class="login-logo-mark">
+                <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="20" cy="14" r="7" fill="currentColor" opacity=".9"/>
+                  <ellipse cx="20" cy="30" rx="11" ry="6" fill="currentColor" opacity=".7"/>
+                </svg>
+              </div>
               <div>
                 <h2 class="login-heading">Bienvenido</h2>
                 <p class="login-sub">Ingresá con tu cuenta para continuar</p>
@@ -74,7 +95,9 @@
       <!-- TOPBAR -->
       <header class="topbar">
         <div class="topbar-brand">
-          <span class="topbar-mark">B</span>
+          <div class="topbar-mark">
+            <svg viewBox="0 0 28 28" fill="none"><circle cx="14" cy="10" r="5" fill="currentColor" opacity=".9"/><ellipse cx="14" cy="22" rx="8" ry="4.5" fill="currentColor" opacity=".7"/></svg>
+          </div>
           <div>
             <h2 id="storeTitle" class="topbar-title">Catálogo Bears</h2>
             <p id="storeSubtitle" class="topbar-sub"></p>

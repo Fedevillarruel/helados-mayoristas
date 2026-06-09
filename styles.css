@@ -1749,27 +1749,221 @@ input, textarea, select { font-family: inherit; }
 
 
 /* ══════════════════════════════════════════════════
-   RESPONSIVE OVERRIDES
+   DEMO MODAL POPUP
+══════════════════════════════════════════════════ */
+.demo-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: fadeUp .3s ease;
+}
+.demo-modal.hidden {
+  display: none;
+}
+
+.demo-modal-box {
+  background: var(--c-surface);
+  border-radius: var(--rad-l);
+  padding: 32px 28px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: var(--sh-l);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: fadeUp .4s cubic-bezier(.22,1,.36,1) .05s both;
+}
+
+.demo-modal-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 3px 10px;
+  background: var(--c-accent-lt);
+  color: var(--c-accent);
+  border: 1px solid rgba(232,93,4,.2);
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.demo-modal-title {
+  font-family: var(--font-disp);
+  font-size: 2rem;
+  letter-spacing: .04em;
+  line-height: 1.05;
+  color: var(--c-ink);
+}
+.demo-modal-title span {
+  font-family: var(--font-disp);
+  color: var(--c-ink-3);
+  font-size: 1.4rem;
+}
+
+.demo-modal-body {
+  font-size: .9rem;
+  color: var(--c-ink-2);
+  line-height: 1.6;
+}
+.demo-modal-body strong { color: var(--c-ink); font-weight: 800; }
+
+.demo-modal-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-border);
+  border-radius: var(--rad-s);
+  padding: 11px 13px;
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--c-ink-2);
+  line-height: 1.45;
+}
+.demo-modal-tip svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; stroke: var(--c-accent); }
+
+.demo-modal-btn {
+  padding: 12px;
+  background: var(--c-ink);
+  color: #fff;
+  font-weight: 800;
+  font-size: .9rem;
+  border-radius: var(--rad-s);
+  transition: background .15s, transform .15s;
+}
+.demo-modal-btn:hover { background: #2d1f12; transform: translateY(-1px); }
+
+/* ══════════════════════════════════════════════════
+   LOGIN MOBILE — hero branding + improved layout
 ══════════════════════════════════════════════════ */
 @media (max-width: 800px) {
-  .login-split { grid-template-columns: 1fr; }
+  .login-split { grid-template-columns: 1fr; min-height: 100dvh; }
   .login-visual { display: none; }
-  .login-form-side { padding: 36px 24px; background: var(--c-ink); }
-  .login-form-inner { max-width: 100%; }
-  .login-heading, .login-sub { color: #fff; }
-  .login-logo-mark { background: var(--c-accent); }
-  .lf-field label { color: rgba(255,255,255,.5); }
-  .lf-field input { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.15); color: #fff; }
-  .lf-field input::placeholder { color: rgba(255,255,255,.25); }
-  .lf-field input:focus { background: rgba(255,255,255,.14); border-color: var(--c-accent); }
-  .login-qa { border-color: rgba(255,255,255,.1); }
-  .login-qa-title { color: rgba(255,255,255,.35); }
-  .qa-btn { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.12); }
-  .qa-btn:hover { background: rgba(255,255,255,.12); border-color: var(--c-accent); }
+
+  /* Full dark screen, centered form, hero on top */
+  .login-form-side {
+    min-height: 100dvh;
+    padding: 0;
+    background: #0c0601;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+
+  /* Mobile hero banner */
+  .login-form-inner {
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  /* Hero top section */
+  .login-form-inner::before {
+    content: '';
+    display: block;
+    height: 200px;
+    flex-shrink: 0;
+    background:
+      url('https://bearshelados.com.ar/wp-content/uploads/2023/07/chocolate-con-almendras.jpg') center/cover no-repeat;
+    position: relative;
+  }
+
+  /* Overlay hero */
+  .login-header {
+    position: relative;
+    margin-top: -72px;
+    z-index: 2;
+    margin-bottom: 28px;
+    padding: 0 24px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .login-logo-mark {
+    background: var(--c-accent);
+    width: 40px; height: 40px;
+  }
+  .login-logo-mark svg { color: #fff; }
+
+  .login-heading {
+    font-family: var(--font-disp);
+    font-size: 2.6rem;
+    letter-spacing: .05em;
+    color: #fff;
+    text-shadow: 0 2px 20px rgba(0,0,0,.5);
+    line-height: 1;
+  }
+  .login-sub { color: rgba(255,255,255,.5); }
+
+  /* Form section */
+  .login-form { padding: 0 24px; }
+
+  .lf-field label { color: rgba(255,255,255,.4); }
+  .lf-field input {
+    background: rgba(255,255,255,.07);
+    border-color: rgba(255,255,255,.12);
+    color: #fff;
+    border-radius: var(--rad-s);
+  }
+  .lf-field input::placeholder { color: rgba(255,255,255,.2); }
+  .lf-field input:focus {
+    background: rgba(255,255,255,.12);
+    border-color: var(--c-accent);
+    box-shadow: 0 0 0 3px rgba(232,93,4,.15);
+  }
+
+  .login-error { color: #ff8060; }
+
+  .btn-signin {
+    background: var(--c-accent);
+    border-radius: var(--rad-s);
+  }
+
+  .login-qa {
+    border-color: rgba(255,255,255,.08);
+    margin: 0 24px;
+    padding-bottom: 32px;
+  }
+  .login-qa-title { color: rgba(255,255,255,.3); }
+  .login-qa-grid { grid-template-columns: 1fr 1fr; }
+  .qa-btn {
+    background: rgba(255,255,255,.05);
+    border-color: rgba(255,255,255,.1);
+  }
+  .qa-btn:hover {
+    background: rgba(255,255,255,.1);
+    border-color: var(--c-accent);
+  }
   .qa-role { color: #fff; }
-  .qa-cred  { color: rgba(255,255,255,.4); }
-  .btn-signin { background: var(--c-accent); }
-  .login-error { color: #ff7c5c; }
+  .qa-cred  { color: rgba(255,255,255,.35); }
+}
+
+/* Topbar mark — icon size */
+.topbar-mark {
+  width: 28px; height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--c-accent);
+}
+.topbar-mark svg { width: 100%; height: 100%; }
+
+/* Login logo mark — icon */
+.login-logo-mark svg {
+  width: 22px; height: 22px;
+  color: #fff;
 }
 
 @media (max-width: 600px) {

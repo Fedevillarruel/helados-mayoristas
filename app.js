@@ -181,8 +181,24 @@ function renderApp() {
   }
 }
 
-/* ══════════════════════════════════════════
-   PROFILE DRAWER
+/* ══════════════════════════════════════════   DEMO MODAL — show once
+════════════════════════════════════════ */
+function initDemoModal() {
+  const modal = document.getElementById("demoModal");
+  if (!modal) return;
+
+  const alreadySeen = localStorage.getItem("mh_demo_seen");
+  if (!alreadySeen) {
+    modal.classList.remove("hidden");
+  }
+
+  document.getElementById("demoModalClose")?.addEventListener("click", () => {
+    modal.classList.add("hidden");
+    localStorage.setItem("mh_demo_seen", "1");
+  });
+}
+
+/* ════════════════════════════════════════   PROFILE DRAWER
 ══════════════════════════════════════════ */
 function openProfileDrawer() {
   const drawer  = document.getElementById("profileDrawer");
@@ -314,7 +330,9 @@ function buildFlipbook() {
   const coverBack = document.createElement("div");
   coverBack.className = "page page-cover-back";
   coverBack.innerHTML = `
-    <div class="page-cover-back-mark">B</div>
+    <div class="page-cover-back-mark">
+      <svg viewBox="0 0 80 80" fill="none"><circle cx="40" cy="28" r="18" fill="white" opacity=".12"/><ellipse cx="40" cy="60" rx="26" ry="14" fill="white" opacity=".08"/></svg>
+    </div>
     <p class="page-cover-back-text">Pasá las páginas<br>para descubrir nuestros sabores</p>
   `;
 
@@ -947,6 +965,7 @@ function bindEvents() {
 ══════════════════════════════════════════ */
 function init() {
   bootstrapStorage();
+  initDemoModal();
   bindEvents();
   const session = getSession();
   if (session) renderApp();
