@@ -81,7 +81,11 @@
           </div>
         </div>
         <div class="topbar-right">
-          <div id="whoami" class="user-chip"></div>
+          <!-- Avatar perfil (cliente y admin) -->
+          <button id="profileBtn" class="btn-profile hidden" aria-label="Mi perfil">
+            <div id="profileAvatarSmall" class="profile-avatar"></div>
+            <span id="profileName" class="profile-name"></span>
+          </button>
 
           <!-- Botón carrito (solo cliente) -->
           <button id="cartToggleBtn" class="btn-cart-toggle hidden" aria-label="Abrir carrito">
@@ -148,6 +152,57 @@
         <!-- Overlay para cerrar el drawer -->
         <div id="cartOverlay" class="cart-overlay"></div>
       </section>
+
+      </section>
+
+      <!-- PROFILE DRAWER -->
+      <div id="profileDrawer" class="profile-drawer" aria-label="Perfil">
+        <div class="pd-header">
+          <span class="pd-title">Mi cuenta</span>
+          <button id="profileCloseBtn" class="pd-close" aria-label="Cerrar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="pd-body">
+          <!-- Avatar -->
+          <div>
+            <p class="pd-section-title">Foto de perfil</p>
+            <div class="pd-avatar-row">
+              <div id="profileAvatarBig" class="pd-avatar-big"></div>
+              <div class="pd-avatar-actions">
+                <label class="btn-avatar-upload" for="profileAvatarFile">
+                  Cambiar foto
+                  <input id="profileAvatarFile" type="file" accept="image/*" style="display:none" />
+                </label>
+                <span class="pd-avatar-hint">JPG, PNG o GIF</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Datos personales -->
+          <div>
+            <p class="pd-section-title">Datos personales</p>
+            <form id="profileForm">
+              <div class="pd-field">
+                <label for="profileDisplayName">Nombre</label>
+                <input id="profileDisplayName" type="text" placeholder="Tu nombre" />
+              </div>
+              <div class="pd-field">
+                <label for="profilePhone">Teléfono</label>
+                <input id="profilePhone" type="tel" placeholder="Ej: 11 1234-5678" />
+              </div>
+              <button type="submit" class="btn-pd-save">Guardar cambios</button>
+            </form>
+          </div>
+
+          <!-- Mis pedidos -->
+          <div id="profileOrdersSection">
+            <p class="pd-section-title">Mis pedidos</p>
+            <div id="profileOrdersList" class="pd-orders-list"></div>
+          </div>
+        </div>
+      </div>
+      <div id="profileOverlay" class="profile-drawer-overlay"></div>
 
       <!-- ─── PANEL ADMIN ─── -->
       <section id="adminPanel" class="admin-layout hidden">

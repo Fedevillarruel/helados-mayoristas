@@ -8,6 +8,7 @@ const STORAGE_KEYS = {
   session:  "mh_session",
   cart:     "mh_cart",
   orders:   "mh_orders",
+  profiles: "mh_profiles",
 };
 
 const USERS = [
@@ -104,16 +105,45 @@ function setCart(cart)   { writeStorage(STORAGE_KEYS.cart, cart); }
 function getOrders()         { return readStorage(STORAGE_KEYS.orders, []); }
 function setOrders(orders)   { writeStorage(STORAGE_KEYS.orders, orders); }
 
+/* ── profiles (per-user data: displayName, phone, avatar) ── */
+function getProfiles() { return readStorage(STORAGE_KEYS.profiles, {}); }
+function getProfile(username) {
+  const profiles = getProfiles();
+  const user = USERS.find((u) => u.username === username);
+  return profiles[username] || { displayName: user?.displayName || username, phone: "", avatar: "" };
+}
+function setProfile(username, data) {
+  const profiles = getProfiles();
+  profiles[username] = { ...getProfile(username), ...data };
+  writeStorage(STORAGE_KEYS.profiles, profiles);
+}
+
 /* ══════════════════════════════════════════
    RENDER — shared
 ══════════════════════════════════════════ */
+/* ── render avatar helper ── */
+function renderAvatarEl(el, profile, fallbackLetter) {
+  if (!el) return;
+  if (profile.avatar) {
+    el.innerHTML = `<img src="${profile.avatar}" alt="avatar" />`;
+  } else {
+    el.textContent = (profile.displayName || fallbackLetter || "?")[0].toUpperCase();
+  }
+}
+
 function renderHeader() {
   const settings = getSettings();
   const session  = getSession();
   $("#storeTitle").textContent    = settings.title;
   $("#storeSubtitle").textContent = settings.subtitle;
-  const user = USERS.find((u) => u.username === session.username);
-  $("#whoami").textContent = user?.displayName || session.username;
+
+  const profile = getProfile(session.username);
+  const profileBtn = $("#profileBtn");
+  if (profileBtn) {
+    profileBtn.classList.remove("hidden");
+    $("#profileName").textContent = profile.displayName;
+    renderAvatarEl($("#profileAvatarSmall"), profile, session.username);
+  }
 }
 
 function showApp() {
@@ -151,7 +181,72 @@ function renderApp() {
   }
 }
 
-/* ══════════════════════════════════════════   CART DRAWER
+/* ══════════════════════════════════════════
+   PROFILE DRAWER
+══════════════════════════════════════════ */
+function openProfileDrawer() {
+  const drawer  = document.getElementById("profileDrawer");
+  const overlay = document.getElementById("profileOverlay");
+  if (!drawer) return;
+  renderProfileDrawer();
+  drawer.classList.add("open");
+  overlay?.classList.add("visible");
+  document.body.style.overflow = "hidden";
+}
+
+function closeProfileDrawer() {
+  const drawer  = document.getElementById("profileDrawer");
+  const overlay = document.getElementById("profileOverlay");
+  if (!drawer) return;
+  drawer.classList.remove("open");
+  overlay?.classList.remove("visible");
+  document.body.style.overflow = "";
+}
+
+function renderProfileDrawer() {
+  const session = getSession();
+  if (!session) return;
+  const profile = getProfile(session.username);
+
+  renderAvatarEl($("#profileAvatarBig"), profile, session.username);
+
+  const nameEl  = $("#profileDisplayName");
+  const phoneEl = $("#profilePhone");
+  if (nameEl)  nameEl.value  = profile.displayName || "";
+  if (phoneEl) phoneEl.value = profile.phone || "";
+
+  const orders  = getOrders().filter((o) => o.username === session.username);
+  const listEl  = $("#profileOrdersList");
+  const section = $("#profileOrdersSection");
+  if (!listEl) return;
+
+  if (session.role === "admin") {
+    if (section) section.style.display = "none";
+  } else {
+    if (section) section.style.display = "";
+  }
+
+  if (!orders.length) {
+    listEl.innerHTML = `<p class="pd-empty">Todavía no realizaste pedidos.</p>`;
+    return;
+  }
+
+  listEl.innerHTML = orders.slice(0, 8).map((order) => {
+    const date  = new Date(order.date).toLocaleString("es-AR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+    const items = order.items.map((i) => `${i.name} ×${i.qty}`).join(", ");
+    const total = order.items.reduce((s, i) => s + i.qty, 0);
+    return `
+      <div class="pd-order-card" data-order-id="${order.id}">
+        <div class="pd-order-date">${date} · ${total} sabor${total !== 1 ? "es" : ""}</div>
+        <div class="pd-order-items">${items}</div>
+        <div class="pd-order-repeat">Tocar para repetir →</div>
+      </div>
+    `;
+  }).join("");
+}
+
+/* ══════════════════════════════════════════
+   CART DRAWER
 ════════════════════════════════════════ */
 function openCartDrawer() {
   const drawer  = document.getElementById("cartDrawer");
@@ -573,6 +668,116 @@ function bindEvents() {
 
   /* ── logout ── */
   $("#logoutBtn").addEventListener("click", () => { clearSession(); showLogin(); });
+
+  /* ── Profile drawer ── */
+  $("#profileBtn")?.addEventListener("click", openProfileDrawer);
+  $("#profileCloseBtn")?.addEventListener("click", closeProfileDrawer);
+  $("#profileOverlay")?.addEventListener("click", closeProfileDrawer);
+
+  /* Avatar upload */
+  $("#profileAvatarFile")?.addEventListener("change", (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const session = getSession();
+      if (!session) return;
+      setProfile(session.username, { avatar: ev.target.result });
+      renderAvatarEl($("#profileAvatarBig"),   getProfile(session.username), session.username);
+      renderAvatarEl($("#profileAvatarSmall"), getProfile(session.username), session.username);
+      showToast("Foto actualizada");
+    };
+    reader.readAsDataURL(file);
+  });
+
+  /* Profile form save */
+  $("#profileForm")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const session = getSession();
+    if (!session) return;
+    const displayName = $("#profileDisplayName").value.trim();
+    const phone       = $("#profilePhone").value.trim();
+    if (!displayName) { showToast("El nombre no puede estar vacío.", "warn"); return; }
+    setProfile(session.username, { displayName, phone });
+    $("#profileName").textContent = displayName;
+    showToast("Datos guardados");
+  });
+
+  /* Repeat order from my orders */
+  $("#profileOrdersList")?.addEventListener("click", (e) => {
+    const card = e.target.closest(".pd-order-card");
+    if (!card) return;
+    const orderId = card.dataset.orderId;
+    const order = getOrders().find((o) => o.id === orderId);
+    if (!order) return;
+
+    /* Merge items into current cart */
+    const cart = getCart();
+    order.items.forEach((item) => {
+      const existing = cart.find((c) => c.id === item.id);
+      if (existing) existing.qty += item.qty;
+      else cart.push({ ...item });
+    });
+    setCart(cart);
+    renderCart();
+    closeProfileDrawer();
+    openCartDrawer();
+    showToast("Pedido repetido en tu carrito");
+  });
+
+  /* ── Profile drawer ── */
+  $("#profileBtn")?.addEventListener("click", openProfileDrawer);
+  $("#profileCloseBtn")?.addEventListener("click", closeProfileDrawer);
+  $("#profileOverlay")?.addEventListener("click", closeProfileDrawer);
+
+  /* Avatar upload */
+  $("#profileAvatarFile")?.addEventListener("change", (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const session = getSession();
+      if (!session) return;
+      setProfile(session.username, { avatar: ev.target.result });
+      renderAvatarEl($("#profileAvatarBig"),   getProfile(session.username), session.username);
+      renderAvatarEl($("#profileAvatarSmall"), getProfile(session.username), session.username);
+      showToast("Foto actualizada");
+    };
+    reader.readAsDataURL(file);
+  });
+
+  /* Profile form save */
+  $("#profileForm")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const session = getSession();
+    if (!session) return;
+    const displayName = $("#profileDisplayName").value.trim();
+    const phone       = $("#profilePhone").value.trim();
+    if (!displayName) { showToast("El nombre no puede estar vacío.", "warn"); return; }
+    setProfile(session.username, { displayName, phone });
+    $("#profileName").textContent = displayName;
+    showToast("Datos guardados");
+  });
+
+  /* Repeat order from my orders */
+  $("#profileOrdersList")?.addEventListener("click", (e) => {
+    const card = e.target.closest(".pd-order-card");
+    if (!card) return;
+    const orderId = card.dataset.orderId;
+    const order = getOrders().find((o) => o.id === orderId);
+    if (!order) return;
+    const cart = getCart();
+    order.items.forEach((item) => {
+      const existing = cart.find((c) => c.id === item.id);
+      if (existing) existing.qty += item.qty;
+      else cart.push({ ...item });
+    });
+    setCart(cart);
+    renderCart();
+    closeProfileDrawer();
+    openCartDrawer();
+    showToast("Pedido repetido en el carrito");
+  });
 
   /* ── Cart toggle button ── */
   $("#cartToggleBtn")?.addEventListener("click", openCartDrawer);
